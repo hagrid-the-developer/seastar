@@ -3995,6 +3995,22 @@ bool smp::pure_poll_queues() {
     return false;
 }
 
+void reactor::handle_signal(int signo, std::function<void ()>&& handler)
+{
+    if (signo != SIGHUP && signo != SIGUSR2)
+    {
+        throw std::invalid_argument(sprint("Cannot set user handler for signal %d", signo));
+    }
+    _signals.handle_signal(signo, std::move(handler));
+}
+
+void smp::handle_signal(int signo, std::function<void ()>&& handler)
+{
+    submit_to(0, [signo, h = std::move(handler)]() mutable {
+        engine().handle_signal(signo, std::move(h));
+    });
+}
+
 __thread bool g_need_preempt;
 
 __thread reactor* local_engine;
