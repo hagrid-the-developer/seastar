@@ -955,6 +955,8 @@ public:
         }
     }
 
+    void handle_signal(int signo, std::function<void ()>&& handler);
+
     /// Set a handler that will be called when there is no task to execute on cpu.
     /// Handler should do a low priority work.
     /// 
@@ -1173,6 +1175,8 @@ public:
             return smp::submit_to(id, Func(func));
         });
     }
+    // Register user-level signal handler on core 0. Only a few signals can be catched be user-supplied handlers.
+    static void handle_signal(int signo, std::function<void ()>&& handler);
 private:
     static void start_all_queues();
     static void pin(unsigned cpu_id);
