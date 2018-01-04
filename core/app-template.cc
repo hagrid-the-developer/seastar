@@ -81,6 +81,23 @@ boost::program_options::options_description& app_template::get_conf_file_options
     return _opts_conf_file;
 }
 
+std::set<std::string> app_template::get_reloadable() {
+    const auto set_reactor = reactor::get_reloadable();
+    const auto set_seastar_metrics = seastar::metrics::get_reloadable();
+    const auto set_smp = smp::get_reloadable();
+    const auto set_scollectd = scollectd::get_reloadable();
+    const auto set_log_cli = log_cli::get_reloadable();
+
+    std::set<std::string> ret;
+    ret.insert(std::begin(set_reactor), std::end(set_reactor));
+    ret.insert(std::begin(set_seastar_metrics), std::end(set_seastar_metrics));
+    ret.insert(std::begin(set_smp), std::end(set_smp));
+    ret.insert(std::begin(set_scollectd), std::end(set_scollectd));
+    ret.insert(std::begin(set_reactor), std::end(set_reactor));
+    ret.insert(std::begin(set_log_cli), std::end(set_log_cli));
+    return ret;
+}
+
 boost::program_options::options_description_easy_init
 app_template::add_options() {
     return _opts.add_options();

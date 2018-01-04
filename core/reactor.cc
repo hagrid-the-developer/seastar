@@ -693,7 +693,16 @@ public:
     static future<std::unique_ptr<network_stack>> create(sstring name, options opts);
 };
 
-void reactor::configure(boost::program_options::variables_map vm) {
+void reactor::configure(boost::program_options::variables_map vm, const bool reload) {
+    auto task_quota = vm["task-quota-ms"].as<double>() * 1ms;
+    _task_quota = std::chrono::duration_cast<sched_clock::duration>(task_quota);
+
+    auto blocked_time = vm["blocked-reactor-notify-ms"].as<unsigned>() * 1ms;
+    _tasks_processed_report_threshold = unsigned(blocked_time / task_quota);
+
+    if (reload)
+        return;
+
     auto network_stack_ready = vm.count("network-stack")
         ? network_stack_registry::create(sstring(vm["network-stack"].as<std::string>()), vm)
         : network_stack_registry::create(vm);
@@ -702,11 +711,7 @@ void reactor::configure(boost::program_options::variables_map vm) {
     });
 
     _handle_sigint = !vm.count("no-handle-interrupt");
-    auto task_quota = vm["task-quota-ms"].as<double>() * 1ms;
-    _task_quota = std::chrono::duration_cast<sched_clock::duration>(task_quota);
 
-    auto blocked_time = vm["blocked-reactor-notify-ms"].as<unsigned>() * 1ms;
-    _tasks_processed_report_threshold = unsigned(blocked_time / task_quota);
     _stall_detector_reports_per_minute = vm["blocked-reactor-reports-per-minute"].as<unsigned>();
 
     _max_task_backlog = vm["max-task-backlog"].as<unsigned>();
@@ -3565,6 +3570,10 @@ reactor::get_options_description(std::chrono::duration<double> default_task_quot
     return opts;
 }
 
+std::set<std::string> reactor::get_reloadable() {
+    return {};
+}
+
 boost::program_options::options_description
 smp::get_options_description()
 {
@@ -3590,6 +3599,10 @@ smp::get_options_description()
 #endif
         ;
     return opts;
+}
+
+std::set<std::string> smp::get_reloadable() {
+    return {};
 }
 
 thread_local scollectd::impl scollectd_impl;
@@ -3731,8 +3744,13 @@ static void sigabrt_action() noexcept {
     print_with_backtrace("Aborting");
 }
 
-void smp::configure(boost::program_options::variables_map configuration)
+void smp::configure(boost::program_options::variables_map configuration, const bool reload)
 {
+    if (reload) {
+        engine().configure(configuration);
+        return;
+    }
+
 #ifndef NO_EXCEPTION_HACK
     if (configuration["enable-glibc-exception-scaling-workaround"].as<bool>()) {
         init_phdr_cache();
