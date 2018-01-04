@@ -849,6 +849,7 @@ private:
     uint64_t min_vruntime() const;
 public:
     static boost::program_options::options_description get_options_description(std::chrono::duration<double> default_task_quota);
+    static std::set<std::string> get_reloadable();
     explicit reactor(unsigned id);
     reactor(const reactor&) = delete;
     ~reactor();
@@ -874,7 +875,7 @@ public:
         return _io_queue->update_shares_for_class(pc, shares);
     }
 
-    void configure(boost::program_options::variables_map config);
+    void configure(boost::program_options::variables_map config, const bool reload = false);
 
     server_socket listen(socket_address sa, listen_options opts = {});
 
@@ -1118,7 +1119,8 @@ class smp {
     using returns_void = std::is_same<std::result_of_t<Func()>, void>;
 public:
     static boost::program_options::options_description get_options_description();
-    static void configure(boost::program_options::variables_map vm);
+    static std::set<std::string> get_reloadable();
+    static void configure(boost::program_options::variables_map vm, const bool realod = false);
     static void cleanup();
     static void cleanup_cpu();
     static void arrive_at_event_loop_end();

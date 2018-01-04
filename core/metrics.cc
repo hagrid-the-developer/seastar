@@ -97,6 +97,10 @@ boost::program_options::options_description get_options_description() {
     return opts;
 }
 
+std::set<std::string> get_reloadable() {
+    return {};
+}
+
 future<> configure(const boost::program_options::variables_map & opts) {
     impl::config c;
     c.hostname = opts["metrics-hostname"].as<std::string>();

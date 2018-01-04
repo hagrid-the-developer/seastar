@@ -45,6 +45,7 @@ namespace log_cli {
 /// \brief Options for controlling logging at run-time.
 ///
 boost::program_options::options_description get_options_description();
+std::set<std::string> get_reloadable();
 
 ///
 /// \brief Print a human-friendly list of the available loggers.
