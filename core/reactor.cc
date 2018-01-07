@@ -3565,6 +3565,10 @@ reactor::get_options_description(std::chrono::duration<double> default_task_quot
     return opts;
 }
 
+std::set<std::string> reactor::get_reloadable() {
+    return { "task-quota-ms", "blocked-reactor-notify-ms" };
+}
+
 boost::program_options::options_description
 smp::get_options_description()
 {
@@ -3590,6 +3594,10 @@ smp::get_options_description()
 #endif
         ;
     return opts;
+}
+
+std::set<std::string> smp::get_reloadable() {
+    return {};
 }
 
 thread_local scollectd::impl scollectd_impl;
@@ -3731,7 +3739,7 @@ static void sigabrt_action() noexcept {
     print_with_backtrace("Aborting");
 }
 
-void smp::configure(boost::program_options::variables_map configuration, const bool reload)
+void smp::configure(boost::program_options::variables_map configuration)
 {
 #ifndef NO_EXCEPTION_HACK
     if (configuration["enable-glibc-exception-scaling-workaround"].as<bool>()) {

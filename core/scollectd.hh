@@ -360,6 +360,7 @@ extern const plugin_instance_id per_cpu_plugin_instance;
 
 void configure(const boost::program_options::variables_map&);
 boost::program_options::options_description get_options_description();
+std::set<std::string> get_reloadable();
 void remove_polled_metric(const type_instance_id &);
 
 class plugin_instance_metrics;

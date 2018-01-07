@@ -849,6 +849,7 @@ private:
     uint64_t min_vruntime() const;
 public:
     static boost::program_options::options_description get_options_description(std::chrono::duration<double> default_task_quota);
+    static std::set<std::string> get_reloadable();
     explicit reactor(unsigned id);
     reactor(const reactor&) = delete;
     ~reactor();
@@ -1118,6 +1119,7 @@ class smp {
     using returns_void = std::is_same<std::result_of_t<Func()>, void>;
 public:
     static boost::program_options::options_description get_options_description();
+    static std::set<std::string> get_reloadable();
     static void configure(boost::program_options::variables_map vm);
     static void cleanup();
     static void cleanup_cpu();

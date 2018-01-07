@@ -539,6 +539,9 @@ boost::program_options::options_description get_options_description() {
             "Deprecated option, use metrics-hostname instead");
     return opts;
 }
+std::set<std::string> get_reloadable() {
+    return {};
+}
 
 static seastar::metrics::impl::register_ref get_register(const scollectd::type_instance_id& i) {
     seastar::metrics::impl::metric_id id = to_metrics_id(i);
