@@ -693,6 +693,12 @@ public:
     static future<std::unique_ptr<network_stack>> create(sstring name, options opts);
 };
 
+void reactor::configure_blocked_reactor_notify_ms(const boost::program_options::variables_map& vm) {
+    auto task_quota = vm["task-quota-ms"].as<double>() * 1ms;
+    auto blocked_time = vm["blocked-reactor-notify-ms"].as<unsigned>() * 1ms;
+    _tasks_processed_report_threshold = unsigned(blocked_time / task_quota);
+}
+
 void reactor::configure(boost::program_options::variables_map vm) {
     auto network_stack_ready = vm.count("network-stack")
         ? network_stack_registry::create(sstring(vm["network-stack"].as<std::string>()), vm)
@@ -705,8 +711,8 @@ void reactor::configure(boost::program_options::variables_map vm) {
     auto task_quota = vm["task-quota-ms"].as<double>() * 1ms;
     _task_quota = std::chrono::duration_cast<sched_clock::duration>(task_quota);
 
-    auto blocked_time = vm["blocked-reactor-notify-ms"].as<unsigned>() * 1ms;
-    _tasks_processed_report_threshold = unsigned(blocked_time / task_quota);
+    configure_blocked_reactor_notify_ms(vm);
+
     _stall_detector_reports_per_minute = vm["blocked-reactor-reports-per-minute"].as<unsigned>();
 
     _max_task_backlog = vm["max-task-backlog"].as<unsigned>();
@@ -3566,7 +3572,7 @@ reactor::get_options_description(std::chrono::duration<double> default_task_quot
 }
 
 std::unordered_set<sstring> reactor::get_reloadable_options() {
-    return {};
+    return { "blocked-reactor-notify-ms" };
 }
 
 boost::program_options::options_description

@@ -116,6 +116,23 @@ app_template::configuration() {
     return *_configuration;
 }
 
+future<> app_template::reload_configuration(const boost::program_options::variables_map& new_conf) {
+    const auto reloadable = get_reloadable_options();
+    bpo::variables_map& conf = configuration();
+    for (auto& kv : conf) {
+        const auto key = kv.first;
+        auto& val = kv.second;
+        if (reloadable.count(key) && new_conf.count(key)) {
+            val = new_conf[key];
+        }
+    }
+    return parallel_for_each(smp::all_cpus(), [conf] (const unsigned id) {
+        return smp::submit_to(id, [conf] {
+            engine().configure_blocked_reactor_notify_ms(conf);
+        });
+    });
+}
+
 int
 app_template::run(int ac, char ** av, std::function<future<int> ()>&& func) {
     return run_deprecated(ac, av, [func = std::move(func)] () mutable {

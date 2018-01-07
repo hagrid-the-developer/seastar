@@ -66,6 +66,7 @@ public:
     boost::program_options::options_description_easy_init add_options();
     void add_positional_options(std::initializer_list<positional_option> options);
     boost::program_options::variables_map& configuration();
+    future<> reload_configuration(const boost::program_options::variables_map&);
     int run_deprecated(int ac, char ** av, std::function<void ()>&& func);
 
     void set_configuration_reader(configuration_reader conf_reader);

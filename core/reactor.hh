@@ -875,7 +875,8 @@ public:
         return _io_queue->update_shares_for_class(pc, shares);
     }
 
-    void configure(boost::program_options::variables_map config);
+    void configure_blocked_reactor_notify_ms(const boost::program_options::variables_map& vm);
+    void configure(boost::program_options::variables_map vm);
 
     server_socket listen(socket_address sa, listen_options opts = {});
 
