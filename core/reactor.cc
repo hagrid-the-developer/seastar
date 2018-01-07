@@ -3565,6 +3565,10 @@ reactor::get_options_description(std::chrono::duration<double> default_task_quot
     return opts;
 }
 
+std::unordered_set<sstring> reactor::get_reloadable_options() {
+    return {};
+}
+
 boost::program_options::options_description
 smp::get_options_description()
 {
@@ -3590,6 +3594,10 @@ smp::get_options_description()
 #endif
         ;
     return opts;
+}
+
+std::unordered_set<sstring> smp::get_reloadable_options() {
+    return {};
 }
 
 thread_local scollectd::impl scollectd_impl;

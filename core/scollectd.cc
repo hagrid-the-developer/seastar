@@ -540,6 +540,10 @@ boost::program_options::options_description get_options_description() {
     return opts;
 }
 
+std::unordered_set<sstring> get_reloadable_options() {
+    return {};
+}
+
 static seastar::metrics::impl::register_ref get_register(const scollectd::type_instance_id& i) {
     seastar::metrics::impl::metric_id id = to_metrics_id(i);
     return seastar::metrics::impl::get_value_map().at(id.full_name()).at(id.labels());

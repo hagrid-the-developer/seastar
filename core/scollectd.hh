@@ -31,6 +31,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <unordered_set>
 #include <chrono>
 #include <boost/program_options.hpp>
 
@@ -360,6 +361,7 @@ extern const plugin_instance_id per_cpu_plugin_instance;
 
 void configure(const boost::program_options::variables_map&);
 boost::program_options::options_description get_options_description();
+std::unordered_set<sstring> get_reloadable_options();
 void remove_polled_metric(const type_instance_id &);
 
 class plugin_instance_metrics;

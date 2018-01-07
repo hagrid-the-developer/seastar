@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <iostream>
 #include <unordered_map>
+#include <unordered_set>
 
 /// \addtogroup logging
 /// @{
@@ -45,6 +46,7 @@ namespace log_cli {
 /// \brief Options for controlling logging at run-time.
 ///
 boost::program_options::options_description get_options_description();
+std::unordered_set<sstring> get_reloadable_options();
 
 ///
 /// \brief Print a human-friendly list of the available loggers.

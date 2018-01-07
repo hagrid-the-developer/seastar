@@ -33,6 +33,7 @@
 #include <sys/epoll.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <unordered_set>
 #include <unordered_map>
 #include <netinet/ip.h>
 #include <cstring>
@@ -54,7 +55,6 @@
 #include <boost/program_options.hpp>
 #include <boost/thread/barrier.hpp>
 #include <boost/container/static_vector.hpp>
-#include <set>
 #include "util/eclipse.hh"
 #include "future.hh"
 #include "posix.hh"
@@ -849,6 +849,7 @@ private:
     uint64_t min_vruntime() const;
 public:
     static boost::program_options::options_description get_options_description(std::chrono::duration<double> default_task_quota);
+    static std::unordered_set<sstring> get_reloadable_options();
     explicit reactor(unsigned id);
     reactor(const reactor&) = delete;
     ~reactor();
@@ -1118,6 +1119,7 @@ class smp {
     using returns_void = std::is_same<std::result_of_t<Func()>, void>;
 public:
     static boost::program_options::options_description get_options_description();
+    static std::unordered_set<sstring> get_reloadable_options();
     static void configure(boost::program_options::variables_map vm);
     static void cleanup();
     static void cleanup_cpu();

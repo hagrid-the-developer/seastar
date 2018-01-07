@@ -377,6 +377,10 @@ bpo::options_description get_options_description() {
     return opts;
 }
 
+std::unordered_set<sstring> get_reloadable_options() {
+    return {};
+}
+
 void print_available_loggers(std::ostream& os) {
     auto names = global_logger_registry().get_all_logger_names();
     // For quick searching by humans.

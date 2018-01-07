@@ -23,6 +23,7 @@
 
 #include "metrics.hh"
 #include <unordered_map>
+#include <unordered_set>
 #include "sharded.hh"
 #include <boost/functional/hash.hpp>
 /*!
@@ -384,6 +385,7 @@ future<> configure(const boost::program_options::variables_map & opts);
  */
 
 boost::program_options::options_description get_options_description();
+std::unordered_set<sstring> get_reloadable_options();
 
 }
 }

@@ -27,6 +27,7 @@
 #include <core/future.hh>
 #include <core/sstring.hh>
 #include <chrono>
+#include <unordered_set>
 
 namespace seastar {
 
@@ -59,6 +60,8 @@ public:
     explicit app_template(config cfg = config());
 
     boost::program_options::options_description& get_options_description();
+    // Returns a set of configuration options that can be reloaded in runtime.
+    std::unordered_set<sstring> get_reloadable_options();
     boost::program_options::options_description& get_conf_file_options_description();
     boost::program_options::options_description_easy_init add_options();
     void add_positional_options(std::initializer_list<positional_option> options);
