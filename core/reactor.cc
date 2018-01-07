@@ -3571,7 +3571,7 @@ reactor::get_options_description(std::chrono::duration<double> default_task_quot
 }
 
 std::set<std::string> reactor::get_reloadable() {
-    return {};
+    return { "task-quota-ms", "blocked-reactor-notify-ms" };
 }
 
 boost::program_options::options_description
@@ -3747,7 +3747,11 @@ static void sigabrt_action() noexcept {
 void smp::configure(boost::program_options::variables_map configuration, const bool reload)
 {
     if (reload) {
-        engine().configure(configuration);
+        for (unsigned i = 0; i < smp::count; i++) {
+	    submit_to(i, [configuration] {
+	        engine().configure(configuration, true);
+            }
+        }
         return;
     }
 
@@ -3764,8 +3768,8 @@ void smp::configure(boost::program_options::variables_map configuration, const b
     // We leave some signals unmasked since we don't handle them ourself.
     sigset_t sigs;
     sigfillset(&sigs);
-    for (auto sig : {SIGHUP, SIGQUIT, SIGILL, SIGABRT, SIGFPE, SIGSEGV,
-            SIGALRM, SIGCONT, SIGSTOP, SIGTSTP, SIGTTIN, SIGTTOU, SIGUSR2}) {
+    for (auto sig : {SIGHUP, SIGUSR2, SIGQUIT, SIGILL, SIGABRT, SIGFPE, SIGSEGV,
+            SIGALRM, SIGCONT, SIGSTOP, SIGTSTP, SIGTTIN, SIGTTOU}) {
         sigdelset(&sigs, sig);
     }
     pthread_sigmask(SIG_BLOCK, &sigs, nullptr);
