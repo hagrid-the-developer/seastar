@@ -3746,7 +3746,7 @@ void smp::configure(boost::program_options::variables_map configuration)
     // We leave some signals unmasked since we don't handle them ourself.
     sigset_t sigs;
     sigfillset(&sigs);
-    for (auto sig : {SIGHUP, SIGQUIT, SIGILL, SIGABRT, SIGFPE, SIGSEGV,
+    for (auto sig : {SIGHUP, SIGUSR2, SIGQUIT, SIGILL, SIGABRT, SIGFPE, SIGSEGV,
             SIGALRM, SIGCONT, SIGSTOP, SIGTSTP, SIGTTIN, SIGTTOU}) {
         sigdelset(&sigs, sig);
     }
@@ -3993,6 +3993,22 @@ bool smp::pure_poll_queues() {
         }
     }
     return false;
+}
+
+void reactor::handle_signal(int signo, std::function<void ()>&& handler)
+{
+    if (signo != SIGHUP && signo != SIGUSR2)
+    {
+        throw std::invalid_argument(sprint("Cannot set user handler for signal %d", signo));
+    }
+    _signals.handle_signal(signo, std::move(handler));
+}
+
+void smp::handle_signal(int signo, std::function<void ()>&& handler)
+{
+    submit_to(0, [signo, h = std::move(handler)]() mutable {
+        engine().handle_signal(signo, std::move(h));
+    });
 }
 
 __thread bool g_need_preempt;
