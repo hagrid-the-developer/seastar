@@ -3749,8 +3749,7 @@ void smp::configure(boost::program_options::variables_map configuration, const b
     if (reload) {
         for (unsigned i = 0; i < smp::count; i++) {
 	    submit_to(i, [configuration] {
-	        engine().configure(configuration, true);
-            }
+	        engine().configure(configuration, true); });
         }
         return;
     }
