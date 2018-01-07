@@ -3765,7 +3765,7 @@ void smp::configure(boost::program_options::variables_map configuration, const b
     sigset_t sigs;
     sigfillset(&sigs);
     for (auto sig : {SIGHUP, SIGQUIT, SIGILL, SIGABRT, SIGFPE, SIGSEGV,
-            SIGALRM, SIGCONT, SIGSTOP, SIGTSTP, SIGTTIN, SIGTTOU}) {
+            SIGALRM, SIGCONT, SIGSTOP, SIGTSTP, SIGTTIN, SIGTTOU, SIGUSR2}) {
         sigdelset(&sigs, sig);
     }
     pthread_sigmask(SIG_BLOCK, &sigs, nullptr);

@@ -1177,7 +1177,7 @@ public:
             return smp::submit_to(id, Func(func));
         });
     }
-    // Register user-level signal handler on core 0. Only a few signals can be catched be user-supplied handlers.
+    /// Register user-level signal handler on core 0. Only a few signals can be catched be user-supplied handlers.
     static void handle_signal(int signo, std::function<void ()>&& handler);
 private:
     static void start_all_queues();
