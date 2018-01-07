@@ -93,7 +93,6 @@ std::set<std::string> app_template::get_reloadable() {
     ret.insert(std::begin(set_seastar_metrics), std::end(set_seastar_metrics));
     ret.insert(std::begin(set_smp), std::end(set_smp));
     ret.insert(std::begin(set_scollectd), std::end(set_scollectd));
-    ret.insert(std::begin(set_reactor), std::end(set_reactor));
     ret.insert(std::begin(set_log_cli), std::end(set_log_cli));
     return ret;
 }
