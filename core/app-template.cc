@@ -117,6 +117,19 @@ app_template::configuration() {
     return *_configuration;
 }
 
+void app_template::reload_configuration(const boost::program_options::variables_map& new_conf) {
+    const auto reloadable = get_reloadable();
+    bpo::variables_map& conf = configuration();
+    for (auto& kv: conf) {
+        const auto key = kv.first;
+        auto& val = kv.second;
+        if (reloadable.count(key) && new_conf.count(key)) {
+            val = new_conf[key];
+        }
+    }
+    smp::configure(conf, true);
+}
+
 int
 app_template::run(int ac, char ** av, std::function<future<int> ()>&& func) {
     return run_deprecated(ac, av, [func = std::move(func)] () mutable {
